@@ -3,28 +3,46 @@
 
 using namespace std;
 
-int main()
-{
-    RPG p1 = RPG("wiz", 70, 45, 15, "mage");
+void gameLoop(RPG* p1, RPG* p2);
+void displayEnd(RPG p1, RPG p2);
+void displayStats(RPG p1, RPG p2);
+
+int main() {
+    RPG p1 = RPG("Wiz", 70, 45, 15, "mage");
     RPG p2 = RPG();
 
-    printf("%s Current STats\n", p1.getName().c_str());
-    printf("Health: %i\t Strength: %i\t Defense: %i\n" , p1.getHealth(),p1.getStrength(), p1.getDefense());
-    
-    printf("%s Current Stats\n", p2.getName().c_str());
-    printf("Health: %i\t Strength: %i\t Defense: %i\n", p2.getHealth(), p2.getStrength(), p2.getDefense());
-    
-    //DO THE SAME FOR p2
-
-    //CALL updateHealth(0) on either p1 and p2
-    p1.updateHealth(0);
-
-    //PRINT OUT THE NEW HEALTH
-    printf("%s's new Health: %i\n", p1.getName().c_str(), p1.getHealth());
-
-    // CALL isAlive() on both p1 and p2
-    printf("%s is alive: %s\n", p1.getName().c_str(), p1.isAlive() ? "true" : "false");
-    printf("%s is alive: %s\n", p2.getName().c_str(), p2.isAlive() ? "true" : "false");
+    gameLoop(&p1, &p2);
+    displayEnd(p1, p2);
 
     return 0;
+}
+
+void gameLoop(RPG* p1, RPG* p2) {
+    while (p1->isAlive() && p2->isAlive()) {
+        displayStats(*p1, *p2);
+        p1->useSkill(p2);
+        if (!p2->isAlive()) {
+            break;
+        }
+        RPG* temp = p1;
+        p1 = p2;
+        p2 = temp;
+    }
+}
+
+void displayEnd(RPG p1, RPG p2) {
+    if (p1.isAlive()) {
+        cout << p1.getName() << " wins!" << endl;
+    } else {
+        cout << p2.getName() << " wins!" << endl;
+    }
+}
+
+void displayStats(RPG p1, RPG p2) {
+    cout << "-----------------------------------" << endl;
+    cout << p1.getName() << " Current Stats" << endl;
+    cout << "Health: " << p1.getHealth() << "\tStrength: " << p1.getStrength() << "\tDefense: " << p1.getDefense() << endl;
+    cout << p2.getName() << " Current Stats" << endl;
+    cout << "Health: " << p2.getHealth() << "\tStrength: " << p2.getStrength() << "\tDefense: " << p2.getDefense() << endl;
+    cout << "-----------------------------------" << endl;
 }
