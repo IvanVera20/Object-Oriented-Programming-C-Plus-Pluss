@@ -1,5 +1,6 @@
 #include "RPG.h"
-#include <cstdio>
+#include <iostream>
+using namespace std;
 
 RPG::RPG() : name("NPC"), strength(10), health(100), defense(10), type("warrior") {
     skills[0] = "slash";
@@ -8,6 +9,10 @@ RPG::RPG() : name("NPC"), strength(10), health(100), defense(10), type("warrior"
 
 RPG::RPG(string name, int health, int strength, int defense, string type)
     : name(name), strength(strength), health(health), defense(defense), type(type) {}
+
+void RPG::printAction(string skill, RPG opponent) {
+    cout << name << " used " << skill << " on " << opponent.getName() << endl;
+}
 
 void RPG::updateHealth(int new_Health) {
     health = new_Health;
@@ -33,6 +38,31 @@ int RPG::getDefense() const {
     return defense;
 }
 
+void RPG::useSkill(RPG *opponent) {
+    // Print out all available skills
+    for (int i = 0; i < SKILL_SIZE; ++i) {
+        printf("Skill %i: %s\n", i, skills[i].c_str());
+    }
+    cout << "Choose a skill to use: Enter 0 or 1" << endl;
+    int chosen_skill_index;
+    cin >> chosen_skill_index;
+    string chosen_skill = skills[chosen_skill_index];
+    printAction(chosen_skill, *opponent);
+    attack(opponent);
+}
+
+void RPG::attack(RPG* opponent) {
+    int damage = strength - opponent->getDefense();
+    if (damage > 0) {
+        int newHealth = opponent->getHealth() - damage;
+        opponent->updateHealth(newHealth);
+
+        cout << name << " attacked " << opponent->getName() << " causing " << damage << " damage." << endl;
+    } else {
+        cout << "No damage was done." << endl;
+    }
+}
+
 void RPG::setSkills() {
     if (type == "mage") {
         skills[0] = "fire";
@@ -47,8 +77,4 @@ void RPG::setSkills() {
         skills[0] = "splash";
         skills[1] = "parry";
     }
-}
-
-void RPG::printAction(string skill, RPG opponent) {
-    printf("%s used %s on %s\n", name.c_str(), skill.c_str(), opponent.getName().c_str());
 }
