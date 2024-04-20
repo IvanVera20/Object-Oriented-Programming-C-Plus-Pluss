@@ -14,16 +14,15 @@ using namespace std;
  * @param elem : integer look for
  * @return int
 */
-int iterativeSearch(vector<int>v, int elem){
-    // use a for loop where the index, i goes from 0 to the size of v
-
-    // inside the for loop, use an if statement to check whether the element at i (e.g. v[i]) equals elem
-    // inside the if statement return i
-
-
-    // outside of the for loop return -1
-
+    int iterativeSearch(vector<int> v, int elem) {
+    for (int i = 0; i < v.size(); ++i) {
+        if (v[i] == elem) {
+            return i; 
+        }
+    }
+    return -1; 
 }
+
 
 /**
  * @brief returns the index of elem, if its exists in v. Otherwise it returns -1.
@@ -42,23 +41,23 @@ int iterativeSearch(vector<int>v, int elem){
  * @param elem : integer to look for
  * @return int  
 */
-int binarySearch(vector<int> & v, int start, int end, int elem){
-    // write an if statement that checks the terminating case
-    //inside the if statement return -1
+    int binarySearch(vector<int> &v, int start, int end, int elem) {
+    if (start <= end) {
+        int mid = start + (end - start) / 2;
 
-    // instantiate the midpoint
+        if (v[mid] == elem) {
+            return mid; // Element found at mid
+        }
 
-
-    // Use if/else statements to do the following:
-    // 1) update end (search left half)
-
-    // 2) update start (search right half)
-
-    //3) return mid (found the elem)
-
-    // return a recursive calls to binarySearch(...)
-
-
+        if (v[mid] > elem) {
+            // Search in the left half
+            return binarySearch(v, start, mid - 1, elem);
+        } else {
+            // Search in the right half
+            return binarySearch(v, mid + 1, end, elem);
+        }
+    }
+    return -1; // Element not found
 }
 
 /**
@@ -70,7 +69,7 @@ int binarySearch(vector<int> & v, int start, int end, int elem){
  * @param filename : string
  * @param v :vector
 */
-void vecGen(string filename, vector<int> & v){
+    void vecGen(string filename, vector<int> & v){
     ifstream file(filename);
     int num;
     v.clear();
@@ -81,8 +80,38 @@ void vecGen(string filename, vector<int> & v){
 }
 
 
-int main (){
-    // populate v with 10000 sorted numbers (leave as is)
+int main() {
     vector<int> v;
-    vecGen("10000_numbers.csv")
+    vecGen("10000_numbers.csv", v);
+
+    vector<int> elem_to_find;
+    vecGen("test_elem.csv", elem_to_find);
+
+    cout << "Iterative Search:" << endl;
+    double total_iterative_time = 0.0;
+    for (int i = 0; i < elem_to_find.size(); ++i) {
+        int elem = elem_to_find[i];
+        clock_t start = clock();
+        int index_if_found = iterativeSearch(v, elem);
+        clock_t end = clock();
+        double elapsed_time_in_sec = (double(end - start) / CLOCKS_PER_SEC);
+        total_iterative_time += elapsed_time_in_sec;
+        cout << "Element " << elem << " found at index " << index_if_found << ". Time taken: " << elapsed_time_in_sec << " seconds" << endl;
+    }
+    cout << "Average time for iterativeSearch: " << total_iterative_time / elem_to_find.size() << " seconds" << endl;
+
+    cout << "\nBinary Search:" << endl;
+    double total_binary_time = 0.0;
+    for (int i = 0; i < elem_to_find.size(); ++i) {
+        int elem = elem_to_find[i];
+        clock_t start = clock();
+        int index_if_found = binarySearch(v, 0, v.size() - 1, elem);
+        clock_t end = clock();
+        double elapsed_time_in_sec = (double(end - start) / CLOCKS_PER_SEC);
+        total_binary_time += elapsed_time_in_sec;
+        cout << "Element " << elem << " found at index " << index_if_found << ". Time taken: " << elapsed_time_in_sec << " seconds" << endl;
+    }
+    cout << "Average time for binarySearch: " << total_binary_time / elem_to_find.size() << " seconds" << endl;
+
+    return 0;
 }
